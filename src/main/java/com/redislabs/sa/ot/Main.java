@@ -26,7 +26,8 @@ public class Main {
             aThreadClass.setTaskName("sortedSet");
             aThreadClass.setTaskNumber(1000);
             try{
-                // does this sleep fix the connection issue?
+                // ACRE had no issues with it sleeping or not
+                // RE Container broke either way
                 Thread.sleep(200);
                 Thread thread = new Thread(aThreadClass);
                 thread.start();
@@ -70,9 +71,14 @@ class AThreadClass implements Runnable{
     @Override
     public void run() {
         if(taskName.equalsIgnoreCase("sortedSet")){
-            try(Jedis jedis = jedisPool.getResource()){
-                for(int x=0;x<taskNumber;x++){
-                    jedis.zadd("z:voters",x,(100-(x%23)+"vote"));
+            for(int y = 0;y<10;y++) {
+                try (Jedis jedis = jedisPool.getResource()) {
+                    for (int x = 0; x < taskNumber / 10; x++) {
+                        jedis.zadd("z:voters"+x, y, (100 - (x % 23) + "vote"));
+                        if (x % 60 == 0) {
+                            jedis.info();
+                        }
+                    }
                 }
             }
         }else if(taskName.equalsIgnoreCase("topK")){
