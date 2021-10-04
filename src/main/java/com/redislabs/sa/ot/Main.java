@@ -10,14 +10,15 @@ import redis.clients.jedis.ScanResult;
 
 public class Main {
 
-
     public static void main(String[] args){
         System.out.println("testing");
         for(int x=0;x<6;x++) {
             AThreadClass.flushDB();
-            loadSortedSetData((20*x)+20);
+            loadSortedSetData((10*x)+20);
             weakSearch((100*x)+200);
-            System.out.println("All Threads kicked off...");
+            try{
+                Thread.sleep(3000);
+            }catch(Throwable t){t.printStackTrace();}
         }
     }
 
@@ -95,7 +96,7 @@ class AThreadClass implements Runnable{
             }
         }else if(taskName.equalsIgnoreCase("weakSearch")){
             try (Jedis jedis = jedisPool.getResource()) {
-                System.out.println(jedis.keys("z:kp:{swcGroupA}:|BQ|L-J*"));
+                //System.out.println(jedis.keys("z:kp:{swcGroupA}:|BQ|L-J*"));
             }
             String cursor ="0";
             String keyForScan = "";
@@ -117,24 +118,24 @@ class AThreadClass implements Runnable{
                     }
                     if (orderFront == true) {
                         if (sr.getResult().contains("z:kp:{swcGroupA}:|ER|L-Xi|Catapult|22222")) {
-                            System.out.println("!!! ThreadID: " + threadID + " Cursor at: " + cursor + " -Found " + 22222 + " Catapult --> " + jedis.zrangeByScore("z:kp:{swcGroupA}:|ER|L-Xi|Catapult|22222", 22222, 22222));
+                            //System.out.println("!!! ThreadID: " + threadID + " Cursor at: " + cursor + " -Found " + 22222 + " Catapult --> " + jedis.zrangeByScore("z:kp:{swcGroupA}:|ER|L-Xi|Catapult|22222", 22222, 22222));
                         }
                     } else {
                         if (sr.getResult().contains("z:kp:{swcGroupA}:|BQ|L-Jack|Masters|99999")) {
-                            System.out.println("!!! ThreadID: " + threadID + " Cursor at: " + cursor + " -Found " + 99999 + " Jack --> " + jedis.zrangeByScore("z:kp:{swcGroupA}:|BQ|L-Jack|Masters|99999", 99999, 99999));
+                            //System.out.println("!!! ThreadID: " + threadID + " Cursor at: " + cursor + " -Found " + 99999 + " Jack --> " + jedis.zrangeByScore("z:kp:{swcGroupA}:|BQ|L-Jack|Masters|99999", 99999, 99999));
                         }
                         try {
                             Thread.sleep(10);
-                        } catch (Throwable t) {
+                        } catch (Throwable t) { // this is the sleep block only - no need to report on the exception
                         }
                     }
                     if (sr.getResult().contains("z:kp:{swcGroupA}:|BQ|L-Jack|Masters|99999")) {
-                        System.out.println("!!! -Found " + 99999 + " Jack --> Cursor at: " + cursor + " balance is: "+ jedis.zrangeByScore("z:kp:{swcGroupA}:|BQ|L-Jack|Masters|99999", 99999, 99999));
+                        //System.out.println("!!! -Found " + 99999 + " Jack --> Cursor at: " + cursor + " balance is: "+ jedis.zrangeByScore("z:kp:{swcGroupA}:|BQ|L-Jack|Masters|99999", 99999, 99999));
                     }else if(sr.getResult().contains("z:kp:{swcGroupA}:|ER|L-Xi|Catapult|22222")) {
-                        System.out.println("!!! ThreadID: " + threadID + " Cursor at: " + cursor + " -Found " + 22222 + " Catapult --> " + jedis.zrangeByScore("z:kp:{swcGroupA}:|ER|L-Xi|Catapult|22222", 22222, 22222));
+                        //System.out.println("!!! ThreadID: " + threadID + " Cursor at: " + cursor + " -Found " + 22222 + " Catapult --> " + jedis.zrangeByScore("z:kp:{swcGroupA}:|ER|L-Xi|Catapult|22222", 22222, 22222));
                     }
                 }
-            }
+            }catch(Throwable t){System.out.println("TRying to get a resource from the pool... " +System.currentTimeMillis()); t.printStackTrace();}
         }else{
             throw new NotImplementedException("sorry, no way to do that Hal...");
         }
