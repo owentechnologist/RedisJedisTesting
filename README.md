@@ -7,7 +7,7 @@ Test one:  Using the Redis Enterprise Proxy with OSS cluster API support turned 
 2) Configure your redis Enterprise Clustered database with OSS CLuster Support NOT enabled
 3) execute this:
 ```
-mvn compile exec:java -Dexec.args="loop 2 threadbase 300"
+mvn compile exec:java -Dexec.args="loop 1 threadbase 400"
 ```
 
 This often results in:
@@ -40,7 +40,7 @@ Test two:  Using the Redis Enterprise Proxy with OSS cluster API support turned 
 3) execute this:
 
 ```
-mvn compile exec:java -Dexec.args="clusterapi true loop 2 threadbase 300"
+mvn compile exec:java -Dexec.args="clusterapi true loop 1 threadbase 400"
 ```
 
 This should not result in any TimeoutExceptions.
