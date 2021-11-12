@@ -75,7 +75,7 @@ public class Main {
                 loop = Integer.parseInt(it.next());
             }
         }
-        for(int x=1;x<loop;x++) {
+        for(int x=1;x<=loop;x++) {
             AThreadClass.flushDB();
             loadSortedSetData(threadBase * x,isClusterAPI); // x only grows to be as big as 'loop'
             System.out.println(" IN MAIN --> IS CLUSTER API SET TO "+isClusterAPI);
