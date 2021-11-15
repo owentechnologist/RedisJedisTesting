@@ -1,4 +1,4 @@
-# RedisHackingTesting
+# RedisJedisTesting
 A  place to experiment with Redis in Java
 
 Test one:  Using the Redis Enterprise Proxy with OSS cluster API support turned off:
