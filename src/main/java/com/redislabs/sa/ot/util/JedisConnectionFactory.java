@@ -26,6 +26,7 @@ public class JedisConnectionFactory {
     public static final String setTestWhileIdlePropertyName = "REDIS_TEST_WHILE_IDLE";
     public static final String setTestOnCreatePropertyName = "REDIS_TEST_ON_CREATE";
     public static final String jedisClusterMaxAttemptsPropertyName = "JEDIS_CLUSTER_MAX_RETRIES";
+    public static final String jedisClusterAPINodesPropertyName= "REDIS_CLUSTER_NODES";
 
     private static JedisPool jedisPool;
     private static JedisCluster jedisCluster = null;
@@ -158,23 +159,13 @@ public class JedisConnectionFactory {
         } else {
             timeout = redis.clients.jedis.Protocol.DEFAULT_TIMEOUT;
         }
-
-        //public JedisCluster(HostAndPort node, int connectionTimeout, int soTimeout, int maxAttempts,
-        //      String user, String password, String clientName,
-        //      final GenericObjectPoolConfig<Jedis> poolConfig, boolean ssl)
-        jedisCluster = new JedisCluster(hostAndPort, timeout,timeout,Integer.parseInt(config.getProperty(jedisClusterMaxAttemptsPropertyName)), user, password,"RedisHackingTesting",initPoolConfig());
-        int nodeCount = jedisCluster.getClusterNodes().size();
-        System.out.println(" --- --- <JedisConnectionFactory> --- how many nodes we got? --> "+nodeCount);
         Set<HostAndPort> nodes = new HashSet<HostAndPort>();
-        for(int x = 1;x<=nodeCount;x++){
-            nodes.add(new HostAndPort(config.getProperty(clusterHostPropertyBaseName+x), (Integer.parseInt(config.getProperty(portPropertyName)))));
+        String[] cNodes = config.getProperty(jedisClusterAPINodesPropertyName).split(",");
+        for (String node : cNodes) {
+            String[] hp = node.split(":");
+            nodes.add(new HostAndPort(hp[0], Integer.parseInt(hp[1])));
         }
-/*        JedisPoolConfig poolConfig = new JedisPoolConfig();
-        poolConfig.setMaxTotal(10000);
-        poolConfig.setMaxIdle(500);
-
- */
-        jedisCluster = new JedisCluster(nodes, timeout,timeout,Integer.parseInt(config.getProperty(jedisClusterMaxAttemptsPropertyName)), user, password,"RedisHackingTesting",initPoolConfig());
+        jedisCluster = new JedisCluster(nodes, timeout,timeout,Integer.parseInt(config.getProperty(jedisClusterMaxAttemptsPropertyName)), user, password,"RedisTesting",initPoolConfig());
         return jedisCluster;
     }
 
